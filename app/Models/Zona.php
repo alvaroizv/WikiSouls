@@ -26,12 +26,12 @@ class Zona extends Model
 
     //Relacion con tabla Enemigos
     public function enemigos() : HasMany {
-        return $this->hasMany('App\Models\Enemigo', );
+        return $this->hasMany('App\Models\Enemigo', zona_id);
     }
     
     //Relacion con tabla Objetos
     public function objetos() : HasMany {
-        return $this->hasMany('App\Models\Objeto');
+        return $this->hasMany('App\Models\Objeto', zona_id);
     }
 
     //Relacion con tabla Regiones
