@@ -9,7 +9,7 @@ class Arma extends Model
 {
 
     function getPath(): string {
-        $path = url('assets/img/afeitado.jpg');
+        $path = url('assets/img/portada.jpg');
         if($this->image != null &&
                 file_exists(storage_path('app/public') . '/' . $this->image)) {
             $path = url('storage/' . $this->image);
