@@ -21,7 +21,7 @@ class Region extends Model
 
     //Relacion con tabla zona
     public function zonas() : HasMany{
-        return $this->hasMany('App\Models\Zona', id_zona);
+        return $this->hasMany('App\Models\Zona', region_id);
     }
 
 }
