@@ -11,33 +11,33 @@ use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreZonaRequest;
 use App\Http\Requests\EditZonaRequest;
+use Illuminate\View\View; 
 
 class ZonaController extends Controller
 {
     
     public function __construct()
     {
+        // Middleware de autenticación (excepto para index y show)
         $this->middleware('auth')->except(['index', 'show']);
     }
-    public function index()
+
+
+    public function index(): View // Tipo de Retorno: View
     {
         $zonas = Zona::all();
         return view('zona.index', ["zonas" => $zonas]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+
+    public function create(): View 
     {
         $regiones = Region::orderBy('nombre')->pluck('nombre', 'id');
         return view('zona.create', ['regiones' => $regiones]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreZonaRequest $request)
+    // Almacena una nueva zona en la base de datos.
+    public function store(StoreZonaRequest $request): RedirectResponse 
     {
         $validatedData = $request->validated();
         $zona = new Zona($validatedData);
@@ -61,79 +61,83 @@ class ZonaController extends Controller
             $txtmessage = 'Error inesperado: ' . $e->getMessage();
         }
 
-        // 4. Redirección basada en el resultado
         if ($result) {
-            return redirect()->route('zonas.index')->with('success', $txtmessage);
+            return redirect()->route('zonas.index')->with($txtmessage);
         } else {
-            // Si falla el guardado, redirigimos manteniendo el input y mostrando el error general
             return back()->withInput()->with('error', $txtmessage);
         }
     }
 
-    public function show(Zona $zona)
+    // Muestra la vista detallada de una zona.
+    public function show(Zona $zona): View 
     {
         return view('zona.show', ['zona' => $zona]);
     }
 
-    public function edit(Zona $zona)
+    // Muestra el formulario de edición de una zona.
+    public function edit(Zona $zona): View 
     {
         $regiones = Region::pluck('nombre', 'id');
         return view('zona.edit', ['zona' => $zona, 'regiones' => $regiones]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(EditZonaRequest $request, Zona $zona)
-{
-    $validatedData = $request->validated(); 
+    // Actualiza la zona especificada en la base de datos.
 
-    $result = false;
-    $txtmessage = 'Error desconocido al actualizar la zona.';
+    public function update(EditZonaRequest $request, Zona $zona): RedirectResponse 
+    {
+        $validatedData = $request->validated(); 
 
-    try {
-        if ($request->hasFile('image')) {
-            if ($zona->image) {
-                Storage::disk('public')->delete($zona->image); 
+        $result = false;
+        $txtmessage = 'Error desconocido al actualizar la zona.';
+
+        try {
+            if ($request->hasFile('image')) {
+                if ($zona->image) {
+                    Storage::disk('public')->delete($zona->image); 
+                }
+                
+                $ruta = $this->upload($request, $zona);
+                $validatedData['image'] = $ruta;
+            } 
+
+            $zona->fill($validatedData); 
+            $result = $zona->save();
+
+            if ($result) {
+                $txtmessage = '¡Zona actualizada con éxito! El territorio ha sido re-mapeado.';
             }
-            
-            $ruta = $this->upload($request, $zona);
-            $validatedData['image'] = $ruta;
-        } 
 
-        $zona->fill($validatedData); 
-        $result = $zona->save();
-
-        if ($result) {
-            $txtmessage = '¡Zona actualizada con éxito! El territorio ha sido re-mapeado.';
+        } catch (UniqueConstraintViolationException $e) {
+            $txtmessage = 'Error: Ya existe otra zona con este nombre (Clave única duplicada).';
+            $result = false;
+        } catch (QueryException $e) {
+            $txtmessage = 'Error de Base de Datos: Verifique los campos obligatorios y las referencias (IDs).';
+            $result = false;
+        } catch (\Exception $e) {
+            $txtmessage = 'Error inesperado: ' . $e->getMessage();
+            $result = false;
         }
 
-    } catch (UniqueConstraintViolationException $e) {
-        $txtmessage = 'Error: Ya existe otra zona con este nombre (Clave única duplicada).';
-        $result = false;
-    } catch (QueryException $e) {
-        $txtmessage = 'Error de Base de Datos: Verifique los campos obligatorios y las referencias (IDs).';
-        $result = false;
-    } catch (\Exception $e) {
-        $txtmessage = 'Error inesperado: ' . $e->getMessage();
-        $result = false;
+        if ($result) {
+            return redirect()->route('zonas.show', $zona->id)->with($txtmessage);
+        } else {
+            return back()->withInput()->with('error', $txtmessage);
+        }
     }
 
-    if ($result) {
-        return redirect()->route('zonas.show', $zona->id)->with('success', $txtmessage);
-    } else {
-        return back()->withInput()->with('error', $txtmessage);
-    }
-    }
-
-    private function upload(Request $request, Zona $zona): string {
+    // Método privado para subir la imagen.
+    private function upload(Request $request, Zona $zona): string 
+    {
         $image = $request->file('image');
         $name = $zona->id . '.' . $image->getClientOriginalExtension();
         $ruta = $image->storeAs('zona', $name, 'public');
         return $ruta;
     }
 
-     function destroy(Zona $zona): RedirectResponse {
+    // Elimina la zona de la base de datos.
+
+    function destroy(Zona $zona): RedirectResponse 
+    {
         try {
             if ($zona->image) {
             Storage::disk('public')->delete($zona->image);
@@ -144,13 +148,11 @@ class ZonaController extends Controller
             $textMessage = 'La zona no se ha podido eliminar.';
             $result = false;
         }
-        $message = [
-            'mensajeTexto' => $textMessage,
-        ];
+        
         if($result) {
-            return redirect()->route('zonas.index')->with('success',$textMessage);
+            return redirect()->route('zonas.index')->with($textMessage);
         } else {
-            return back()->withInput()->withErrors($textMessage);
+            return back()->withInput()->with('error', $textMessage);
         }
     }
 }
