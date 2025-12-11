@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Region extends Model
 {
@@ -18,8 +19,9 @@ class Region extends Model
     protected $table = "region";
     protected $fillable = ["nombre","poblacion","dificultad","image"];
 
-    public function zonas(){
-        return $this->hasMany(Zona::class);
+    //Relacion con tabla zona
+    public function zonas() : HasMany{
+        return $this->hasMany('App\Models\Zona', id_zona);
     }
 
 }
