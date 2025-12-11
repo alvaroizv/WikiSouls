@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Objeto;
 use App\Models\Region;
 use App\Models\Enemigo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Zona extends Model
 {
@@ -14,23 +16,27 @@ class Zona extends Model
 
 
     function getPath(): string {
-        $path = url('assets/img/afeitado.jpg');
+        $path = url('assets/img/portada.jpg');
         if($this->image != null &&
                 file_exists(storage_path('app/public') . '/' . $this->image)) {
             $path = url('storage/' . $this->image);
         }
         return $path;
     }
-    public function enemigos(){
-        return $this->hasMany(Enemigo::class);
+
+    //Relacion con tabla Enemigos
+    public function enemigos() : HasMany {
+        return $this->hasMany('App\Models\Enemigo', );
+    }
+    
+    //Relacion con tabla Objetos
+    public function objetos() : HasMany {
+        return $this->hasMany('App\Models\Objeto');
     }
 
-    public function objetos(){
-        return $this->hasMany(Objeto::class);
-    }
-
-    public function region(){
-    return $this->belongsTo(Region::class); 
+    //Relacion con tabla Regiones
+    public function region() : BelongsTo{
+    return $this->belongsTo('App\Models\Region', region_id); 
     }
   
 }
