@@ -16,10 +16,12 @@ class Arma extends Model
         }
         return $path;
     }
+    
     protected $table = "arma";
     protected $fillable = ["nombre","descripcion","ataque","image"];
 
+    // Relacion con enemigos
     public function enemigos() {
-        return $this->hasMany(Enemigo::class);
+        return $this->hasMany('App\Models\Enemigo', id_enemigo);
     }
 }
