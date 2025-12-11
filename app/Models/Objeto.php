@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Zona;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Objeto extends Model
 {
 
     function getPath(): string {
-        $path = url('assets/img/afeitado.jpg');
+        $path = url('assets/img/portada.jpg');
         if($this->image != null &&
                 file_exists(storage_path('app/public') . '/' . $this->image)) {
             $path = url('storage/' . $this->image);
@@ -19,7 +20,8 @@ class Objeto extends Model
     protected $table = "objeto";
     protected $fillable = ["nombre","usos","zona_id","descripcion","image"];
 
-    public function zona(){
-        return $this->belongsTo(Zona::class);
+    //Relacion con tabla zona
+    public function zona() : BelongsTo {
+        return $this->belongsTo('App\Models\Zona', zona_id);
     }
 }
