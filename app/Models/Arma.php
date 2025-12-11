@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Enemigo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Arma extends Model
 {
@@ -21,7 +22,7 @@ class Arma extends Model
     protected $fillable = ["nombre","descripcion","ataque","image"];
 
     // Relacion con enemigos
-    public function enemigos() {
+    public function enemigos() : HasMany {
         return $this->hasMany('App\Models\Enemigo', id_enemigo);
     }
 }
