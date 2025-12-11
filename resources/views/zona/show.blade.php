@@ -6,7 +6,6 @@
 <div class="row justify-content-center">
     <div class="col-lg-10 col-md-12">
 
-        {{-- ENCABEZADO Y TÍTULO PRINCIPAL --}}
         <h1 style="color: var(--ds-highlight-gold);" class="mb-2 display-4">{{ $zona->nombre }}</h1>
         <p class="text-muted mb-4">
             Entrada Enciclopédica del Reino | Forjada el
@@ -17,7 +16,6 @@
 
         <div class="row">
 
-            {{-- COLUMNA PRINCIPAL DE DESCRIPCIÓN --}}
             <div class="col-md-8">
 
                 <img src="{{ $zona->getPath() }}"
@@ -25,7 +23,6 @@
                     class="img-fluid rounded shadow-lg"
                     style="max-height: 400px; object-fit: cover;">
 
-                {{-- DESCRIPCIÓN DETALLADA --}}
                 <h3 class="mb-3" style="color: var(--ds-text-light);">📜 Historia y Descripción</h3>
                 <div class="card p-3 mb-4" style="background-color: #242424; border-color: var(--ds-border-grey);">
                     <p style="color: var(--ds-text-light); white-space: pre-wrap;">{{ $zona->descripcion }}</p>
@@ -66,7 +63,6 @@
 
             </div>
 
-            {{-- COLUMNA LATERAL DE INFORMACIÓN RÁPIDA (INFOBOX) --}}
             <div class="col-md-4">
                 <div class="card p-3" style="background-color: #333333; border-color: var(--ds-highlight-gold);">
                     <h4 class="text-center mb-3" style="color: var(--ds-highlight-gold);">
@@ -74,7 +70,6 @@
                     </h4>
                     <ul class="list-unstyled mb-0" style="color: var(--ds-text-light);">
 
-                        {{-- Región --}}
                         <li class="mb-2">
                             <strong>Región Perteneciente:</strong>
                             <br>
@@ -84,7 +79,6 @@
                             </a>
                         </li>
 
-                        {{-- Tamaño --}}
                         <li class="mb-2">
                             <strong>Tamaño del Territorio:</strong>
                             <br>
@@ -93,13 +87,11 @@
                             </span>
                         </li>
 
-                        {{-- ID --}}
                         <li class="mb-2">
                             <strong>ID de Registro:</strong>
                             <span class="text-muted">{{ $zona->id }}</span>
                         </li>
 
-                        {{-- Fecha de Creación --}}
                         <li class="mb-2">
                             <strong>Fecha de Forja:</strong>
                             <span class="text-muted">{{ $zona->created_at?->format('d M Y') ?? 'N/A' }}</span>
@@ -111,7 +103,6 @@
 
         <hr style="border-color: var(--ds-border-grey);">
 
-        {{-- Botón de Regreso --}}
         <div class="mt-4 text-center">
             <a href="{{ route('zonas.index') }}" class="btn ds-btn px-4">
                 <i class="fas fa-arrow-left"></i> Volver al Índice
